@@ -2,41 +2,42 @@
 #include <string>
 #include <assert.h>
 #include <iostream>
-
 #include <regex>
 #include <Windows.h>
 #include <atlstr.h>
-
+#include <unordered_map>
 #pragma comment(lib,"ws2_32.lib")
 
 #define PORT 1111
 
-std::string TCHAR2STRING(TCHAR* STR)
-{
-	int iLen = WideCharToMultiByte(CP_ACP, 0, STR, -1, NULL, 0, NULL, NULL);
-	char* chRtn = new char[iLen * sizeof(char)];
-	WideCharToMultiByte(CP_ACP, 0, STR, -1, chRtn, iLen, NULL, NULL);
-	std::string str(chRtn);
-	return str;
+std::unordered_map<string, string> mymap = {
+			{"html", "Content-Type: text/html\r\n"},
+			{"htm", "Content-Type: text/html\r\n"},
+			{"\\", "Content-Type: text/html\r\n"},
+			{"txt", "Content-Type: text/plain\r\n"},
+			{"jpg", "Content-Type: image/jpeg\r\n"},
+			{"png", "Content-Type: image/"
+				+ (url.substr(url.rfind('.') + 1))
+				+ "\r\n"},
+			{"ico", "Content-Type: image/x-icon\r\n"},
+};
 
-}
-
-static bool endWith(const std::string& fullStr, const std::string& endStr)
+bool get_suffix(const std::string& full_str, const std::string& end_str)
 {
-	if (endStr.size() > fullStr.size())
+	if (end_str.size() > full_str.size())
 	{
 		return false;
 	}
-	int indexFull = fullStr.size() - 1;
-	int indexEnd = endStr.size() - 1;
-	while (indexEnd >= 0)
+	int size_full = full_str.size() - 1;
+	int size_end = end_str.size() - 1;
+	while (size_end >= 0)
 	{
-		if (fullStr[indexFull] != endStr[indexEnd])
+		if (full_str[size_full] != end_str[size_end])
 		{
 			return false;
 		}
-		indexFull--;
-		indexEnd--;
+		size_full--;
+		size_end--;
 	}
 	return true;
 }
@@ -69,21 +70,18 @@ int main() {
 
 	n = listen(tcp_sock, 10);
 	assert(n == 0);
-	cout << "wait link...\n";
 	while (1)
 	{
+		cout << "wait link..." << endl << endl;
 		sockaddr_in client_address;
 		int len = sizeof client_address;
 		accept_sock = accept(tcp_sock, (LPSOCKADDR)&client_address, &len);
 		char recv_buf[1024];
 		char send_buf[1024];
 		n = recv(accept_sock, recv_buf, sizeof recv_buf, 0);
-		recv_buf[n] = '\0';
 		if (!n)
-		{
-			cout << "555" << endl;
 			continue;
-		}
+		recv_buf[n] = '\0';
 		printf("recv:\n%s\n", recv_buf);
 
 		string recv_str;
@@ -104,65 +102,45 @@ int main() {
 			if (url[i] == '/')
 				url[i] = '\\';
 		}
-		char szFilePath[MAX_PATH + 1] = { 0 };
-		GetModuleFileNameA(NULL, szFilePath, MAX_PATH);    //编码方式ANSI
-		string fullPath = szFilePath;
-		int idx = fullPath.find_last_of('\\');
-		string main_addr = fullPath.substr(0, idx);
-		idx = main_addr.find_last_of('\\');
-		main_addr = main_addr.substr(0, idx);
-		fullPath = main_addr + "\\file" + url;
-		DWORD ftyp = GetFileAttributesA(fullPath.c_str());
+		char file_path[MAX_PATH + 1] = { 0 };
+		GetModuleFileNameA(NULL, file_path, MAX_PATH);    //编码方式ANSI
+		string full_path = file_path;
+		int idx = full_path.find_last_of('\\');
+		string main_path = full_path.substr(0, idx);
+		idx = main_path.find_last_of('\\');
+		main_path = main_path.substr(0, idx);
+		full_path = main_path + "\\file" + url;
+		DWORD ftyp = GetFileAttributesA(full_path.c_str());
 		if ((ftyp != INVALID_FILE_ATTRIBUTES) && (ftyp & FILE_ATTRIBUTE_DIRECTORY))
 		{//是一个目录，打开该目录下的索引index.html
-			fullPath = fullPath + "\index.html";
+			full_path = full_path + "\\index.html";
 		}
-		FILE* infile = fopen(fullPath.c_str(), "rb");
-		if (!infile) cout << "hhh" << endl;
-		string statusCode, firstHeader, respondHttpHeader;
-		respondHttpHeader = "";
-		statusCode = "200 OK";
-		firstHeader = "HTTP/1.1 200 OK\r\n";
-		string typeStr;
-		if (endWith(url, ".html") || endWith(url, "htm") || endWith(url, "\\"))
+		FILE* infile = fopen(full_path.c_str(), "rb");
+		if (!infile) 
+			cout << "hhh" << endl;
+		string first_head, file_type, response_head;
+		first_head = "HTTP/1.1 200 OK\r\n";
+		string suffix = url.substr(url.find_last_of('.') + 1);
+		
+		auto find_type = mymap.find(suffix);
+		if (find_type != mymap.end())
 		{
-			typeStr = "Content-Type: text/html\r\n";
-		}
-		else if (endWith(url, ".txt"))
-		{
-			typeStr = "Content-Type: text/plain\r\n";
-		}
-		else if (endWith(url, ".jpg"))
-		{
-			typeStr = "Content-Type: image/jpeg\r\n";
-		}
-		else if (endWith(url, ".jpeg") || endWith(url, ".png"))
-		{
-			typeStr = "Content-Type: image/"
-				+ (url.substr(url.rfind('.') + 1))
-				+ "\r\n";
-		}
-		else if (endWith(url, ".ico"))
-		{
-			typeStr = "Content-Type: image/x-icon\r\n";
+			file_type = find_type->second;
 		}
 		else
 		{
 			//发送自定义501页面
-			infile = fopen((main_addr + "\\501.html").c_str(), "rb");
-			//infile=fopen("501.html","rb");
-			statusCode = "501 Not Implemented";
-			firstHeader = "HTTP/1.1 501 Not Inplemented\r\n";
-			typeStr = "Content-Type: text/html\r\n";
+			infile = fopen((main_path + "\\501.html").c_str(), "rb");
+			first_head = "HTTP/1.1 501 Not Inplemented\r\n";
+			file_type = "Content-Type: text/html\r\n";
 		}
 		if (!infile)
-		{//文件不存在
+		{
+			//文件不存在
 			//发送自定义404页面
-			infile = fopen((main_addr + "\\404.html").c_str(), "rb");
-			//infile=fopen("404.html","rb");
-			statusCode = "404 Not Found";
-			firstHeader = "HTTP/1.1 404 Not Found\r\n";
-			typeStr = "Content-Type: text/html\r\n";
+			infile = fopen((main_path + "\\404.html").c_str(), "rb");
+			first_head = "HTTP/1.1 404 Not Found\r\n";
+			file_type = "Content-Type: text/html\r\n";
 		}
 		//获取文件大小
 		fseek(infile, 0, SEEK_END);
@@ -170,26 +148,23 @@ int main() {
 		//文件指针归位
 		fseek(infile, 0, SEEK_SET);
 
-		respondHttpHeader = firstHeader
-			+ typeStr
+		response_head = first_head
+			+ file_type
 			+ "Content-Length: " + std::to_string(fileLength) + "\r\n"
 			+ "Server: csr_http1.1\r\n"
 			+ "Connection: close\r\n"
 			+ "\r\n";
 
 		//发送报头
-		n = send(accept_sock,
-			respondHttpHeader.c_str(),
-			(int)(respondHttpHeader.length()),
-			0);
-		int bufReadNum;
+		n = send(accept_sock, response_head.c_str(), (int)(response_head.length()), 0);
+		int file_buf;
 		//发送请求的文件        
 		while (true)
 		{
 			//缓存清零
 			memset(send_buf, 0, sizeof(send_buf));
-			bufReadNum = fread(send_buf, 1, 1024, infile);
-			if (SOCKET_ERROR == (send(accept_sock, send_buf, bufReadNum, 0)))
+			file_buf = fread(send_buf, 1, 1024, infile);
+			if (SOCKET_ERROR == (send(accept_sock, send_buf, file_buf, 0)))
 			{//发送失败
 				n = SOCKET_ERROR;
 				break;
@@ -200,6 +175,7 @@ int main() {
 		fclose(infile);
 
 		closesocket(accept_sock);
+		cout << "send msg end" << endl << endl;
 	}
 	closesocket(tcp_sock);
 	getchar();

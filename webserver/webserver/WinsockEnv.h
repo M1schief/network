@@ -4,7 +4,7 @@ class WinsockEnv
 {
 private:
 	WinsockEnv(void);
-	~WinsockEnv(void);
+	~WinsockEnv();
 public:
 	static int Startup();
 };

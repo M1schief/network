@@ -63,7 +63,10 @@ Server::~Server()
 int Server::winsock_start()
 {
 	if (WinsockEnv::Startup() == -1)
+	{
+		cout << "winsock start error" << endl;
 		return -1;
+	}
 	return 0;
 }
 //服务器启动
@@ -115,10 +118,10 @@ int Server::set_unblock(SOCKET s)
 	int n = ioctlsocket(s, FIONBIO, &mode);
 	if (n == SOCKET_ERROR)
 	{
-		//FIONBIO：允许或禁止套接口s的非阻塞模式。
 		cout << "ioctlsocket() failed with error!\n";
-		return false;
+		return -1;
 	}
+	return 0;
 }
 //删除单个无效会话
 void Server::remove_closed_socket(SOCKET s) {
@@ -173,15 +176,13 @@ int Server::recv_msg(SOCKET s)
 		if (n)
 			//接收成功，输出
 		{
-			string recv = recv_buf;
-			int n = recv.find("\r\n");
-			recv = recv.substr(0, n);
-			cout << "recv:" << recv << endl;
+			cout << "recv ok ! recv meg:" << recv_buf << endl;
 		}
 		else
 		{
 			//接收失败，加入无效队列
 			this->sessions_err->insert(this->sessions_err->end(), s);
+
 			return -1;
 		}
 	}
@@ -234,9 +235,9 @@ int Server::send_msg(SOCKET s,const char* buf,int len,int mode)
 	{
 		//发送失败
 		if(mode == 0)
-			cout << "send head\n";
+			cout << "send head error\n";
 		else
-			cout << "send file\n";
+			cout << "send file error\n";
 		cout << WSAGetLastError() << endl;
 		sessions_err->insert(sessions_err->end(), s);
 		return -1;
@@ -268,6 +269,7 @@ int Server::send_msg(SOCKET s)
 		else
 		{
 			//发送自定义501页面
+			cout << "no support this type of file" << endl;
 			infile = fopen((main_path + "\\501.html").c_str(), "rb");
 			first_head = "HTTP/1.1 501 Not Inplemented\r\n";
 			file_type = "Content-Type: text/html\r\n";
@@ -276,6 +278,7 @@ int Server::send_msg(SOCKET s)
 		{
 			//文件不存在
 			//发送自定义404页面
+			cout << "no file can be read" << endl;
 			infile = fopen((main_path + "\\404.html").c_str(), "rb");
 			first_head = "HTTP/1.1 404 Not Found\r\n";
 			file_type = "Content-Type: text/html\r\n";

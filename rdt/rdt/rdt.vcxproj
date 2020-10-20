@@ -18,6 +18,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataStructure.h" />
+    <ClInclude Include="Global.h" />
+    <ClInclude Include="NetworkService.h" />
+    <ClInclude Include="RandomEventEnum.h" />
+    <ClInclude Include="RdtReceiver.h" />
+    <ClInclude Include="RdtSender.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StopWaitRdtReceiver.h" />
+    <ClInclude Include="StopWaitRdtSender.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Tool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="StopWait.cpp" />
+    <ClCompile Include="StopWaitRdtReceiver.cpp" />
+    <ClCompile Include="StopWaitRdtSender.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{738E2ABE-4B46-40A4-B92F-76B7C22D453B}</ProjectGuid>
@@ -137,8 +156,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -228,7 +228,7 @@ void Server::get_url(char recv_buf[])
 	this->url = main_path + url;
 }
 //∑¢ÀÕ–≈œ¢
-int Server::send_msg(SOCKET s,const char* buf,int len,int mode)
+int Server::send_msg(SOCKET s,const char* buf,int len,int mode)	
 {
 	int n = send(s, buf, len, 0);
 	if (n == SOCKET_ERROR)

@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStructure.h" />
+    <ClInclude Include="GBNRdtReceiver.h" />
+    <ClInclude Include="GBNRdtSender.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="NetworkService.h" />
     <ClInclude Include="RandomEventEnum.h" />
@@ -32,6 +34,8 @@
     <ClInclude Include="Tool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GBNRdtReceiver.cpp" />
+    <ClCompile Include="GBNRdtSender.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StopWait.cpp" />
     <ClCompile Include="StopWaitRdtReceiver.cpp" />

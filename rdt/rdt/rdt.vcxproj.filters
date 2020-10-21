@@ -48,6 +48,12 @@
     <ClInclude Include="Tool.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GBNRdtReceiver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GBNRdtSender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -60,6 +66,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StopWaitRdtSender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GBNRdtSender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GBNRdtReceiver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

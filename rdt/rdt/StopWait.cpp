@@ -7,19 +7,21 @@
 #include "RdtReceiver.h"
 #include "StopWaitRdtSender.h"
 #include "StopWaitRdtReceiver.h"
+#include "GBNRdtReceiver.h"
+#include "GBNRdtSender.h"
 
 
 int main(int argc, char* argv[])
 {
-	RdtSender *ps = new StopWaitRdtSender();
-	RdtReceiver * pr = new StopWaitRdtReceiver();
+	RdtSender *ps = new GBNRdtSender();
+	RdtReceiver * pr = new GBNRdtReceiver();
 //	pns->setRunMode(0);  //VERBOS模式
 	pns->setRunMode(1);  //安静模式
 	pns->init();
 	pns->setRtdSender(ps);
 	pns->setRtdReceiver(pr);
-	pns->setInputFile("F:\\work\\network\\network\\rdt\\input.txt");
-	pns->setOutputFile("F:\\work\\network\\network\\rdt\\output.txt");
+	pns->setInputFile("..\\file\\input.txt");
+	pns->setOutputFile("..\\file\\output.txt");
 
 	pns->start();
 

@@ -1,27 +1,36 @@
 #include <cmath>
-#include "GBNRdtSender.h"
+#include "TcpSender.h"
 #include "DataStructure.h"
 #include "stdafx.h"
 #include "Global.h"
 
-GBNRdtSender::GBNRdtSender() :
+TcpSender::TcpSender() :
 	winSize(4), seqSize(8), sndPkt(new Packet[8])
 {
 	base = 1;
 	nextSeqnum = 1;
+	acknum = 1;
 }
 
-GBNRdtSender::~GBNRdtSender()
+TcpSender::~TcpSender()
 {
 	delete[] sndPkt;
 }
-//判断缓冲区有无位置
-bool GBNRdtSender::getWaitingState()
+//缓存区是否满
+bool TcpSender::getWaitingState()
 {
 	return (base + winSize) % seqSize == nextSeqnum % seqSize;
 }
+//序号是否正确
+bool TcpSender::isInWin(int seqnum)
+{
+	if (base < (base + winSize) % seqSize)
+		return seqnum >= base && seqnum < (base + winSize) % seqSize;
+	else
+		return seqnum >= base || seqnum < (base + winSize) % seqSize;
+}
 //发送
-bool GBNRdtSender::send(const Message& message)
+bool TcpSender::send(const Message& message)
 {
 	if (getWaitingState())
 	{
@@ -29,8 +38,9 @@ bool GBNRdtSender::send(const Message& message)
 		return false;
 	}
 
-	sndPkt[nextSeqnum].acknum = -1; //忽略该字段
+	sndPkt[nextSeqnum].acknum = -1;
 	sndPkt[nextSeqnum].seqnum = nextSeqnum;
+	sndPkt[nextSeqnum].checksum = 0;
 	memcpy(sndPkt[nextSeqnum].payload, message.data, sizeof(message.data));
 	sndPkt[nextSeqnum].checksum = pUtils->calculateCheckSum(sndPkt[nextSeqnum]);
 	pUtils->printPacket("发送方发送报文：", sndPkt[nextSeqnum]);
@@ -41,30 +51,39 @@ bool GBNRdtSender::send(const Message& message)
 	return true;
 }
 //接收
-void GBNRdtSender::receive(const Packet& ackPkt)
+void TcpSender::receive(const Packet& ackPkt)
 {
 	int checknum = pUtils->calculateCheckSum(ackPkt);
 	if (checknum != ackPkt.checksum)
 		pUtils->printPacket("接收ack损坏！", ackPkt);
 	else
 	{
-		base = (ackPkt.acknum + 1) % seqSize;
-		pns->stopTimer(SENDER, 0);
-		if (base != nextSeqnum)
-			pns->startTimer(SENDER, Configuration::TIME_OUT, 0);
-		cout << "窗口滑动\n";
+		if (isInWin(ackPkt.acknum))
+		{
+			//正常ack
+			base = (ackPkt.acknum + 1) % seqSize;
+			acknum = 1;
+			pns->stopTimer(SENDER, 0);
+			if (base != nextSeqnum)
+				pns->startTimer(SENDER, Configuration::TIME_OUT, 0);
+		}
+		else
+		{
+			//冗余ack
+			acknum++;
+			if (acknum == 3)
+				//快速重传
+				pns->sendToNetworkLayer(RECEIVER, sndPkt[base]);
+		}
 	}
 }
-//超时
-void GBNRdtSender::timeoutHandler(int seqNum)
+
+void TcpSender::timeoutHandler(int seqNum)
 {
 	cout << "超时\n";
 	pns->stopTimer(SENDER, 0);
 	pns->startTimer(SENDER, Configuration::TIME_OUT, 0);
-	for (int i = base; i != nextSeqnum; i = (i + 1) % seqSize)
-	{
-		pUtils->printPacket("重发报文：", sndPkt[i]);
-		pns->sendToNetworkLayer(RECEIVER, sndPkt[i]);
-	}
+	pUtils->printPacket("重发报文：", sndPkt[base]);
+	pns->sendToNetworkLayer(RECEIVER, sndPkt[base]);
 	cout << "重发完成！\n";
 }

@@ -7,8 +7,8 @@ private:
 	const int seqSize;
 	const int winSize;
 	int base;
-	Packet* const sndPkt;
-	bool* const sndState;
+	Packet* const sndPkt; //接收缓冲区
+	bool* const sndState;	//缓冲区确认情况
 	Packet lastPkt;
 
 public:

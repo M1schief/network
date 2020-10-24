@@ -4,8 +4,8 @@
 class GBNRdtReceiver :public RdtReceiver
 {
 private:
-	int expectedSeqnum;
-	const int seqSize;
+	const int seqSize; //ÐòºÅ´óÐ¡
+	int expectedSeqnum; //ÆÚ´ýÐòºÅ
 	Packet sndPkt;
 
 public:

@@ -60,12 +60,15 @@
     <ClInclude Include="SRRdtSender.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TcpSender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpReceiver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="StopWait.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StopWaitRdtReceiver.cpp">
@@ -84,6 +87,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SRRdtReceiver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -15,7 +15,7 @@ GBNRdtReceiver::GBNRdtReceiver() :
 GBNRdtReceiver::~GBNRdtReceiver()
 {
 }
-
+//接收
 void GBNRdtReceiver::receive(const Packet& packet)
 {
 	//检查校验和

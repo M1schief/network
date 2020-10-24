@@ -19,7 +19,7 @@ SRRdtSender::~SRRdtSender()
 	delete[] sndPkt;
 	delete[] sndState;
 }
-
+//是否在正确窗口内
 bool SRRdtSender::isInWin(int seqnum)
 {
 	if (base < (base + winSize) % seqSize)
@@ -27,14 +27,15 @@ bool SRRdtSender::isInWin(int seqnum)
 	else
 		return seqnum >= base || seqnum < (base + winSize) % seqSize;
 }
-
+//缓存区是否满
 bool SRRdtSender::getWaitingState()
 {
 	return (base + winSize) % seqSize == nextSeqnum % seqSize;
 }
-
+//发送
 bool SRRdtSender::send(const Message& message)
 {
+	//判断缓存区空间
 	if (getWaitingState())
 	{
 		cout << "发送窗口已满！\n";
@@ -66,6 +67,7 @@ void SRRdtSender::receive(const Packet& ackPkt)
 			sndState[ackPkt.acknum] = true;
 			while (sndState[base])
 			{
+				//窗口更新
 				sndState[base] = false;
 				base = (base + 1) % seqSize;
 			}

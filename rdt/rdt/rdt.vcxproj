@@ -27,6 +27,8 @@
     <ClInclude Include="RandomEventEnum.h" />
     <ClInclude Include="RdtReceiver.h" />
     <ClInclude Include="RdtSender.h" />
+    <ClInclude Include="SRRdtReceiver.h" />
+    <ClInclude Include="SRRdtSender.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StopWaitRdtReceiver.h" />
     <ClInclude Include="StopWaitRdtSender.h" />
@@ -36,6 +38,8 @@
   <ItemGroup>
     <ClCompile Include="GBNRdtReceiver.cpp" />
     <ClCompile Include="GBNRdtSender.cpp" />
+    <ClCompile Include="SRRdtReceiver.cpp" />
+    <ClCompile Include="SRRdtSender.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StopWait.cpp" />
     <ClCompile Include="StopWaitRdtReceiver.cpp" />

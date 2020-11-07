@@ -61,6 +61,7 @@ void SRRdtSender::receive(const Packet& ackPkt)
 		pUtils->printPacket("接收ack损坏！", ackPkt);
 	else
 	{
+		cout << "接收ack" << ackPkt.acknum << endl;
 		pns->stopTimer(SENDER, ackPkt.acknum);
 		if (isInWin(ackPkt.acknum))
 		{

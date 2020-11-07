@@ -61,6 +61,7 @@ void TcpSender::receive(const Packet& ackPkt)
 		if (isInWin(ackPkt.acknum))
 		{
 			//正常ack
+			cout << "接收ack" << ackPkt.acknum << endl;
 			base = (ackPkt.acknum + 1) % seqSize;
 			acknum = 1;
 			pns->stopTimer(SENDER, 0);
@@ -71,8 +72,10 @@ void TcpSender::receive(const Packet& ackPkt)
 		{
 			//冗余ack
 			acknum++;
+			pUtils->printPacket("收到多余ack", sndPkt[base]);
 			if (acknum == 3)
 				//快速重传
+				pUtils->printPacket("快速重传", sndPkt[base]);
 				pns->sendToNetworkLayer(RECEIVER, sndPkt[base]);
 		}
 	}

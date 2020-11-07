@@ -27,26 +27,26 @@ int main(int argc, char* argv[])
 //	pns->setRunMode(0);  //VERBOS模式
 	pns->setRunMode(1);  //安静模式
 
-	pns->init();
-	pns->setRtdSender(GBNnSend);
-	pns->setRtdReceiver(GBNRecv);
-	pns->setInputFile("..\\file\\input.txt");
-	pns->setOutputFile("..\\file\\GBNoutput.txt");
-	pns->start();
+	//pns->init();
+	//pns->setRtdSender(GBNnSend);
+	//pns->setRtdReceiver(GBNRecv);
+	//pns->setInputFile("..\\file\\input.txt");
+	//pns->setOutputFile("..\\file\\GBNoutput.txt");
+	//pns->start();
 
 	pns->init();
 	pns->setRtdSender(SRSend);
 	pns->setRtdReceiver(SRRecv);
 	pns->setInputFile("..\\file\\input.txt");
 	pns->setOutputFile("..\\file\\SRoutput.txt");
-	pns->start();
+	pns->start(); 
 
-	pns->init();
-	pns->setRtdSender(TcpSend);
-	pns->setRtdReceiver(TcpRecv);
-	pns->setInputFile("..\\file\\input.txt");
-	pns->setOutputFile("..\\file\\TCPoutput.txt");
-	pns->start();
+	//pns->init();
+	//pns->setRtdSender(TcpSend);
+	//pns->setRtdReceiver(TcpRecv);
+	//pns->setInputFile("..\\file\\input.txt");
+	//pns->setOutputFile("..\\file\\TCPoutput.txt");
+	//pns->start();
 
 	delete GBNnSend;
 	delete GBNRecv;
